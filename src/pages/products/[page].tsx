@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Search, ProductCard, Pagination } from "@/components";
 import { IProduct } from "@/models";
@@ -51,8 +51,12 @@ export default function ProductsPage({
 }: IProductsProps) {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState(items);
+  const [products, setProducts] = useState([...items]);
   const [totalPages, setTotalPages] = useState(pages);
+
+  useEffect(() => {
+    setProducts(items);
+  }, [items]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,13 +110,15 @@ export default function ProductsPage({
 
       {/* Product List */}
       {products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
             <ProductCard
+              key={product.id}
               id={product.id}
               image={product.image}
               title={product.title}
               price={product.price}
+              category={product.category}
             />
           ))}
         </div>
