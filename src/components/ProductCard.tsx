@@ -11,7 +11,7 @@ interface IProps {
 
 export const ProductCard = ({ id, image, title, price, category }: IProps) => {
   return (
-    <Link key={id} href={`../product/${id}`}>
+    <Link key={id} href={`/product/${id}`}>
       <div className="border p-4 rounded-lg cursor-pointer hover:shadow-lg transition-shadow bg-white">
         <Image
           width={300}
