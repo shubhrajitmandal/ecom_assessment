@@ -63,7 +63,7 @@ export default function Home({ items, pages, count }: IProductsProps) {
         setIsSearching(false);
       }
     },
-    [searchQuery, currentPage]
+    [searchQuery, sortOption]
   );
 
   const clearSearch = useCallback(async () => {

@@ -34,7 +34,7 @@ export const RelatedProducts = ({ category }: IProps) => {
     }
 
     fetchRelatedProducts();
-  }, []);
+  }, [category]);
 
   if (error)
     return (

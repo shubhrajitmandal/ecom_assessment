@@ -41,8 +41,7 @@ export default async function handler(
     }
 
     // filtering
-    let filteredProducts;
-    filteredProducts = products.filter(
+    const filteredProducts = products.filter(
       (p) =>
         p.title.toLowerCase().includes(searchQuery) ||
         p.category.toLowerCase().includes(searchQuery)
