@@ -5,6 +5,7 @@ import { IProduct } from "@/models";
 interface IApiResponse {
   items: IProduct[];
   pages: number;
+  count: number;
 }
 
 interface IApiError {
@@ -18,7 +19,7 @@ export default async function handler(
   const PRODUCTS_PER_PAGE = 20;
 
   try {
-    const { q = "", page = "1" } = req.query;
+    const { q = "", page = "1", sort = "default" } = req.query;
 
     const searchQuery = (q as string).toLowerCase();
 
@@ -39,6 +40,12 @@ export default async function handler(
         p.title.toLowerCase().includes(searchQuery) ||
         p.category.toLowerCase().includes(searchQuery)
     );
+
+    if (sort === "price-asc") {
+      filteredProducts.sort((a, b) => a.price - b.price);
+    } else if (sort === "price-desc") {
+      filteredProducts.sort((a, b) => b.price - a.price);
+    }
 
     // pagination
     const paginate = (array: IProduct[], page: number, pageSize: number) => {
@@ -64,6 +71,7 @@ export default async function handler(
     res.status(200).json({
       items,
       pages: totalPages,
+      count: filteredProducts.length,
     });
   } catch (error) {
     console.error("API Fetch Error:", error);

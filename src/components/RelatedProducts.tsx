@@ -58,6 +58,7 @@ export const RelatedProducts = ({ category }: IProps) => {
             ))
           : relatedProducts.map((product) => (
               <ProductCard
+                key={product.id}
                 id={product.id}
                 image={product.image}
                 title={product.title}
