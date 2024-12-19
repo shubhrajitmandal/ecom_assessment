@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { setCache, getCache } from "@/utils";
 import { IProduct } from "@/models";
 
 interface IApiResponse {
@@ -20,18 +21,24 @@ export default async function handler(
 
   try {
     const { q = "", page = "1", sort = "default" } = req.query;
-
     const searchQuery = (q as string).toLowerCase();
 
-    // Fetch data from the external API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_FAKE_STORE_URL}/products?limit=150`
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch products from external API");
+    const cacheKey = "products_data";
+    const cacheTTL = 10 * 60 * 1000;
+
+    // Fetch data from the external API and cache it
+    let products = getCache<IProduct[]>(cacheKey) ?? [];
+    if (products.length === 0) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_FAKE_STORE_URL}/products?limit=150`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch products from external API");
+      }
+      const data = await response.json();
+      products = data.products;
+      setCache(cacheKey, products, cacheTTL);
     }
-    const data = await response.json();
-    const { products }: { products: IProduct[] } = data;
 
     // filtering
     let filteredProducts;
@@ -62,7 +69,7 @@ export default async function handler(
       };
     };
     const { items, totalPages } = paginate(
-      filteredProducts,
+      filteredProducts ?? [],
       parseInt(page as string, 10),
       PRODUCTS_PER_PAGE
     );
